@@ -1,0 +1,18 @@
+package com.lumina.booking.repository;
+
+import com.lumina.booking.entity.Booking;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import java.util.List;
+
+public interface BookingRepository extends JpaRepository<Booking, Integer> {
+    List<Booking> findByUserUserId(Integer userId);
+    List<Booking> findByStatus(Booking.BookingStatus status);
+    List<Booking> findByBookingType(Booking.BookingType bookingType);
+
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.status = 'PENDING'")
+    long countPending();
+
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.bookingType = 'PARTY'")
+    long countParty();
+}
