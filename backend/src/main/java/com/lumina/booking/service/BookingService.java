@@ -99,6 +99,31 @@ public class BookingService {
         return bookingRepository.save(booking);
     }
 
+    @Transactional
+    public Booking updateBookingDetails(Integer bookingId, BookingDTO.UpdateRequest request) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn đặt bàn"));
+
+        booking.setBookingDate(request.getBookingDate());
+        booking.setBookingTime(request.getBookingTime());
+        booking.setGuestCount(request.getGuestCount());
+        booking.setNote(request.getNote());
+        
+        if (request.getEventType() != null) {
+            booking.setEventType(request.getEventType());
+        }
+
+        if (request.getTableId() != null) {
+            RestaurantTable table = tableRepository.findById(request.getTableId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy bàn"));
+            booking.setTable(table);
+        } else {
+            booking.setTable(null);
+        }
+
+        return bookingRepository.save(booking);
+    }
+
     public List<BookingItem> getBookingItems(Integer bookingId) {
         return bookingItemRepository.findByBookingBookingId(bookingId);
     }

@@ -23,14 +23,14 @@ export default function AboutPage() {
               Chúng tôi tin rằng bữa ăn ngon nhất là bữa ăn được chuẩn bị bằng cả trái tim, sử dụng những nguyên liệu địa phương tươi ngon nhất, kết hợp cùng kỹ thuật nấu nướng hiện đại của phương Tây. Từng chi tiết nhỏ tại Lumina – từ ánh đèn pha lê, bản nhạc Jazz du dương đến cách trình bày món ăn – đều được chăm chút tỉ mỉ.
             </p>
           </div>
-          <div className="luxury-card-img-wrapper" style={{ borderRadius: "8px", border: "1px solid var(--glass-border)" }}>
-            <Image src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070&auto=format&fit=crop" alt="Restaurant Interior" fill className="luxury-card-img" />
+          <div className="luxury-card-img-wrapper" style={{ borderRadius: "8px", border: "1px solid var(--glass-border)", position: "relative" }}>
+            <Image src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070&auto=format&fit=crop" alt="Restaurant Interior" fill sizes="(max-width: 768px) 100vw, 50vw" className="luxury-card-img" />
           </div>
         </div>
 
         <div className="grid grid-cols-2" style={{ alignItems: "center", gap: "4rem" }}>
-          <div className="luxury-card-img-wrapper" style={{ borderRadius: "8px", border: "1px solid var(--accent-gold)", order: -1 }}>
-            <Image src="https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=1984&auto=format&fit=crop" alt="Bếp trưởng" fill className="luxury-card-img" style={{ objectPosition: "top" }} />
+          <div className="luxury-card-img-wrapper" style={{ borderRadius: "8px", border: "1px solid var(--accent-gold)", order: -1, position: "relative" }}>
+            <Image src="https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=1984&auto=format&fit=crop" alt="Bếp trưởng" fill sizes="(max-width: 768px) 100vw, 50vw" className="luxury-card-img" style={{ objectPosition: "top" }} />
           </div>
           <div className="animate-fade-in-up">
             <p className="page-subtitle" style={{ marginBottom: "0.5rem" }}>Bếp Trưởng Điều Hành</p>
@@ -41,7 +41,9 @@ export default function AboutPage() {
             <blockquote style={{ borderLeft: "4px solid var(--accent-gold)", paddingLeft: "1.5rem", fontStyle: "italic", fontSize: "1.2rem", color: "white", marginBottom: "2rem" }}>
               "Mỗi món ăn là một tác phẩm nghệ thuật, một câu chuyện mà tôi muốn kể cho thực khách thông qua từng hương vị."
             </blockquote>
-            <Image src="/signature.png" alt="Chữ ký" width={150} height={60} style={{ filter: "invert(1) brightness(2) sepia(1) hue-rotate(5deg) saturate(3)" }} />
+          <div style={{ marginTop: "2rem", fontFamily: "var(--font-playfair)", fontStyle: "italic", fontSize: "1.5rem", color: "var(--accent-gold)" }}>
+            Trần Văn Đoàn
+          </div>
           </div>
         </div>
       </div>

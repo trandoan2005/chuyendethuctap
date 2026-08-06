@@ -1,6 +1,20 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminLayout({ children }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Bạn cần đăng nhập bằng tài khoản Admin trước!");
+      router.push("/login");
+    }
+  }, [router]);
+
   return (
     <div className="admin-wrapper">
       <aside className="admin-sidebar">

@@ -55,48 +55,40 @@ export default function MenuPage() {
     <>
       <header className="page-header">
         <Image src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2070&auto=format&fit=crop" alt="Menu Header" fill className="page-header-bg" />
-        <div className="page-header-content animate-fade-in-up">
+        <div className="container page-header-content animate-fade-in-up">
           <p className="page-subtitle">A Culinary Journey</p>
-          <h1 className="page-title">Thực Đơn</h1>
+          <h1 className="page-title">Thực Đơn A La Carte</h1>
         </div>
       </header>
 
-      <div className="container section">
+      <div className="container section" style={{ maxWidth: "1000px" }}>
         {categories.map((category) => (
-          <div key={category} style={{ marginBottom: "5rem" }}>
-            <h2 style={{ fontSize: "2.5rem", borderBottom: "1px solid var(--bg-tertiary)", paddingBottom: "1rem", marginBottom: "3rem", color: "var(--accent-gold)" }}>
-              {category}
-            </h2>
-            <div className="grid grid-cols-2">
+          <div key={category} className="menu-category animate-fade-in-up">
+            <h2 className="menu-category-title text-gold">{category}</h2>
+            
+            <div>
               {loading ? (
-                <p style={{ color: "var(--text-secondary)" }}>Đang tải thực đơn...</p>
+                <p className="text-center text-muted">Đang tải thực đơn...</p>
               ) : foods.filter(m => m.cat === category).length === 0 ? (
-                <p style={{ color: "var(--text-secondary)" }}>Đang cập nhật món ăn...</p>
+                <p className="text-center text-muted">Đang cập nhật món ăn...</p>
               ) : foods.filter(m => m.cat === category).map((item) => (
-                <div key={item.id} style={{ display: "flex", gap: "1.5rem", alignItems: "center", borderBottom: "1px solid var(--bg-tertiary)", paddingBottom: "1.5rem" }}>
-                  <div style={{ position: "relative", width: "120px", height: "120px", borderRadius: "50%", overflow: "hidden", flexShrink: 0, border: "2px solid var(--accent-gold)" }}>
-                    <Image src={item.img} alt={item.name} fill style={{ objectFit: "cover" }} />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.5rem" }}>
-                      <h3 style={{ fontSize: "1.4rem", margin: 0 }}>{item.name}</h3>
-                      <div style={{ color: "var(--accent-gold)", fontWeight: "600", fontSize: "1.2rem", borderBottom: "1px dotted var(--accent-gold)" }}>
-                        {item.price}đ
-                      </div>
+                <div key={item.id} className="menu-item">
+                  <div style={{ flex: 1, paddingRight: "2rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                      <h3 className="menu-item-name">{item.name}</h3>
+                      <div className="menu-item-price">{item.price}đ</div>
                     </div>
-                    <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", marginBottom: "0.8rem" }}>{item.desc}</p>
+                    <p className="menu-item-desc">{item.desc}</p>
                     <button 
                       onClick={() => handleAdd(item)}
-                      style={{ 
-                        background: "transparent", border: "1px solid var(--glass-border)", 
-                        color: "white", padding: "0.4rem 1rem", fontSize: "0.8rem", 
-                        cursor: "pointer", textTransform: "uppercase", letterSpacing: "1px",
-                        transition: "all 0.3s"
+                      style={{
+                        background: "none", border: "none", color: "var(--accent-gold)", 
+                        fontFamily: "var(--font-inter)", fontSize: "0.75rem", textTransform: "uppercase", 
+                        letterSpacing: "1px", marginTop: "1rem", cursor: "pointer", borderBottom: "1px solid var(--accent-gold)",
+                        paddingBottom: "2px"
                       }}
-                      onMouseOver={(e) => {e.target.style.background = 'var(--accent-gold)'; e.target.style.color = 'black'; e.target.style.borderColor = 'var(--accent-gold)';}}
-                      onMouseOut={(e) => {e.target.style.background = 'transparent'; e.target.style.color = 'white'; e.target.style.borderColor = 'var(--glass-border)';}}
                     >
-                      + Chọn món
+                      Thêm vào chọn món
                     </button>
                   </div>
                 </div>
@@ -105,8 +97,8 @@ export default function MenuPage() {
           </div>
         ))}
         
-        <div style={{ textAlign: "center", marginTop: "4rem" }}>
-          <Link href="/reservation" className="btn-primary">Hoàn Tất & Đặt Bàn</Link>
+        <div className="text-center mt-12" style={{ marginTop: "4rem" }}>
+          <Link href="/reservation" className="btn-primary">Chuyển Đến Đặt Bàn</Link>
         </div>
       </div>
     </>

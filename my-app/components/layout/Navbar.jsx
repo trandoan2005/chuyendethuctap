@@ -2,13 +2,45 @@
 
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const { cart } = useCart();
   const cartItemCount = cart.reduce((total, item) => total + item.qty, 0);
+  
+  const [user, setUser] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try { setUser(JSON.parse(storedUser)); } catch (e) {}
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    router.push("/login");
+  };
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="container nav-container">
         <Link href="/" className="nav-logo">
           Lumina
@@ -54,7 +86,15 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-          <Link href="/login" className="btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.875rem" }}>Đăng Nhập</Link>
+          
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <span style={{ color: "var(--text-primary)", fontWeight: "400", letterSpacing: "1px", fontSize: "0.85rem", textTransform: "uppercase" }}>Xin chào, {user.fullName.split(" ")[0]}</span>
+              <button onClick={handleLogout} className="btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}>Đăng Xuất</button>
+            </div>
+          ) : (
+            <Link href="/login" className="btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}>Đăng Nhập</Link>
+          )}
         </div>
       </div>
     </nav>

@@ -54,6 +54,13 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.createBooking(request));
     }
 
+    // PUT /api/bookings/{id} - Cập nhật thông tin chi tiết đơn
+    @PutMapping("/{id}")
+    public ResponseEntity<Booking> updateBookingDetails(@PathVariable Integer id,
+                                                        @Valid @RequestBody BookingDTO.UpdateRequest request) {
+        return ResponseEntity.ok(bookingService.updateBookingDetails(id, request));
+    }
+
     // PUT /api/bookings/{id}/status - Cập nhật trạng thái (Admin duyệt/hủy)
     @PutMapping("/{id}/status")
     public ResponseEntity<Booking> updateStatus(@PathVariable Integer id,

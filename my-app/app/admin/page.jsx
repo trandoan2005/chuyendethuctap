@@ -1,28 +1,63 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalBookings: 0,
+    pendingCount: 0,
+    partyCount: 0,
+    totalCustomers: 0
+  });
+  const [recent, setRecent] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const headers = { "Authorization": `Bearer ${token}` };
+      
+      const statsRes = await fetch("http://localhost:8080/api/admin/stats", { headers });
+      if (statsRes.ok) {
+        setStats(await statsRes.json());
+      }
+      
+      const bookingsRes = await fetch("http://localhost:8080/api/bookings", { headers });
+      if (bookingsRes.ok) {
+        const data = await bookingsRes.json();
+        // lấy 5 đơn mới nhất
+        setRecent(data.slice(0, 5));
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="admin-dashboard">
       <div className="admin-stats-grid">
         <div className="admin-stat-card">
           <h3>Tổng Đơn Đặt Bàn</h3>
-          <p className="stat-value">124</p>
-          <p className="stat-change positive">+12% tuần này</p>
+          <p className="stat-value">{stats.totalBookings}</p>
+          <p className="stat-change positive">Đơn hệ thống</p>
         </div>
         <div className="admin-stat-card">
-          <h3>Tiệc Sắp Tới</h3>
-          <p className="stat-value">8</p>
-          <p className="stat-change">Trong 30 ngày tới</p>
+          <h3>Số Khách Hàng</h3>
+          <p className="stat-value">{stats.totalCustomers}</p>
+          <p className="stat-change positive">Người dùng đăng ký</p>
         </div>
         <div className="admin-stat-card">
-          <h3>Doanh Thu</h3>
-          <p className="stat-value">45.200.000₫</p>
-          <p className="stat-change positive">+5.4% tháng này</p>
+          <h3>Đơn Đặt Tiệc</h3>
+          <p className="stat-value">{stats.partyCount}</p>
+          <p className="stat-change positive">Dịch vụ sự kiện</p>
         </div>
         <div className="admin-stat-card">
           <h3>Đơn Chờ Duyệt</h3>
-          <p className="stat-value">14</p>
-          <p className="stat-change negative">Cần xử lý</p>
+          <p className="stat-value">{stats.pendingCount}</p>
+          <p className="stat-change negative">Cần xử lý ngay</p>
         </div>
       </div>
 
@@ -40,30 +75,20 @@ export default function AdminDashboard() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>#ĐB-001</td>
-              <td>Nguyễn Văn An</td>
-              <td>2026-08-05</td>
-              <td>18:30</td>
-              <td>3</td>
-              <td><span className="status-badge status-confirmed">Đã xác nhận</span></td>
-            </tr>
-            <tr>
-              <td>#ĐB-002</td>
-              <td>Trần Thị Bình</td>
-              <td>2026-08-06</td>
-              <td>19:00</td>
-              <td>5</td>
-              <td><span className="status-badge status-pending">Chờ duyệt</span></td>
-            </tr>
-            <tr>
-              <td>#ĐB-003</td>
-              <td>Lê Hoàng Cường</td>
-              <td>2026-08-07</td>
-              <td>20:00</td>
-              <td>7</td>
-              <td><span className="status-badge status-confirmed">Đã xác nhận</span></td>
-            </tr>
+            {recent.map(b => (
+              <tr key={b.bookingId}>
+                <td>#{b.bookingType === 'PARTY' ? 'PTY' : 'ĐB'}-{String(b.bookingId).padStart(3, '0')}</td>
+                <td>{b.user?.fullName}</td>
+                <td>{b.bookingDate}</td>
+                <td>{b.bookingTime}</td>
+                <td>{b.guestCount}</td>
+                <td>
+                  {b.status === 'CONFIRMED' && <span className="status-badge status-confirmed">Đã xác nhận</span>}
+                  {b.status === 'PENDING' && <span className="status-badge status-pending">Chờ duyệt</span>}
+                  {b.status === 'CANCELLED' && <span className="status-badge status-cancelled" style={{ backgroundColor: "#fee2e2", color: "#b91c1c" }}>Đã Hủy</span>}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

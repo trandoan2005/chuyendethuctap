@@ -67,23 +67,41 @@ export default async function SpacesPage() {
         </div>
       </header>
 
-      <div className="container section">
-        <div className="grid grid-cols-2">
-          {spaces.map((space) => (
-            <div key={space.id} className="luxury-card">
-              <div className="luxury-card-img-wrapper">
-                <Image src={space.img} alt={space.name} fill className="luxury-card-img" />
-                <div style={{ position: "absolute", top: "1rem", right: "1rem", background: "rgba(0,0,0,0.7)", padding: "0.5rem 1rem", border: "1px solid var(--accent-gold)", color: "var(--accent-gold)", fontSize: "0.8rem", letterSpacing: "1px" }}>
+      <div className="container section" style={{ maxWidth: "1200px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "6rem" }}>
+          {spaces.map((space, index) => (
+            <div key={space.id} className="animate-fade-in-up" style={{ 
+              display: "flex", 
+              flexDirection: index % 2 === 0 ? "row" : "row-reverse", 
+              alignItems: "center", 
+              gap: "4rem" 
+            }}>
+              {/* Image Side */}
+              <div style={{ flex: "1 1 50%", position: "relative", aspectRatio: "4/3", overflow: "hidden" }}>
+                <Image src={space.img} alt={space.name} fill style={{ objectFit: "cover" }} />
+                <div style={{ 
+                  position: "absolute", top: "1.5rem", right: index % 2 === 0 ? "1.5rem" : "auto", left: index % 2 !== 0 ? "1.5rem" : "auto", 
+                  background: "rgba(0,0,0,0.8)", padding: "0.5rem 1rem", border: "1px solid var(--accent-gold)", 
+                  color: "var(--accent-gold)", fontSize: "0.75rem", letterSpacing: "2px", textTransform: "uppercase" 
+                }}>
                   {space.tag}
                 </div>
               </div>
-              <div className="luxury-card-content">
-                <h2 style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>{space.name}</h2>
-                <div style={{ color: "var(--accent-gold)", marginBottom: "1.5rem", fontWeight: "500", fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "1px" }}>
-                  Sức chứa: {space.capacity} khách
+
+              {/* Text Side */}
+              <div style={{ flex: "1 1 50%", padding: "2rem" }}>
+                <h2 style={{ fontSize: "3rem", marginBottom: "1rem", color: "var(--text-primary)" }}>{space.name}</h2>
+                <div style={{ 
+                  color: "var(--accent-gold)", marginBottom: "2rem", fontWeight: "400", 
+                  fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "2px",
+                  borderBottom: "1px solid rgba(212, 175, 55, 0.3)", paddingBottom: "1rem", display: "inline-block"
+                }}>
+                  Sức chứa tối đa: {space.capacity} khách
                 </div>
-                <p style={{ color: "var(--text-secondary)", marginBottom: "2rem", flex: 1 }}>{space.desc}</p>
-                <Link href="/reservation" className="btn-secondary" style={{ width: "100%" }}>
+                <p style={{ color: "var(--text-secondary)", marginBottom: "3rem", fontSize: "1.05rem", lineHeight: "1.8" }}>
+                  {space.desc}
+                </p>
+                <Link href="/reservation" className="btn-secondary">
                   Đặt Bàn Khu Vực Này
                 </Link>
               </div>

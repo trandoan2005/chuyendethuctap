@@ -43,7 +43,7 @@ export default function CustomersPage() {
   return (
     <div className="admin-page">
       <div className="admin-page-header">
-        <h2 style={{ color: "#0f172a" }}>Danh Sách Khách Hàng</h2>
+        <h2>Danh Sách Khách Hàng</h2>
         <input 
           type="text" 
           placeholder="Tìm kiếm khách hàng..." 

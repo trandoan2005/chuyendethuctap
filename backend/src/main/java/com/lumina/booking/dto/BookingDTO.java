@@ -51,6 +51,22 @@ public class BookingDTO {
     }
 
     @Data
+    public static class UpdateRequest {
+        @NotNull
+        private LocalDate bookingDate;
+
+        @NotNull
+        private LocalTime bookingTime;
+
+        @NotNull
+        private Integer guestCount;
+
+        private String eventType;
+        private String note;
+        private Integer tableId;
+    }
+
+    @Data
     public static class BookingResponse {
         private Integer bookingId;
         private String customerName;

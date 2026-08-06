@@ -34,12 +34,14 @@ public class AuthDTO {
     @Data
     public static class AuthResponse {
         private String token;
+        private Integer userId;
         private String email;
         private String fullName;
         private String role;
 
-        public AuthResponse(String token, String email, String fullName, String role) {
+        public AuthResponse(String token, Integer userId, String email, String fullName, String role) {
             this.token = token;
+            this.userId = userId;
             this.email = email;
             this.fullName = fullName;
             this.role = role;
