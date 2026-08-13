@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import BookingService from "@/services/BookingService";
 
 export default function ReservationsPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,14 +17,8 @@ export default function ReservationsPage() {
 
   const fetchBookings = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8080/api/bookings/regular", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setReservations(data);
-      }
+      const data = await BookingService.getRegularBookings();
+      setReservations(data);
     } catch (err) {
       console.error("Lỗi lấy danh sách đặt bàn:", err);
     } finally {
@@ -33,20 +28,8 @@ export default function ReservationsPage() {
 
   const updateStatus = async (id, status) => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:8080/api/bookings/${id}/status`, {
-        method: "PUT",
-        headers: { 
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ status })
-      });
-      if (res.ok) {
-        fetchBookings(); // refresh
-      } else {
-        alert("Có lỗi xảy ra khi cập nhật trạng thái!");
-      }
+      await BookingService.updateStatus(id, status);
+      fetchBookings(); // refresh
     } catch (err) {
       alert("Không kết nối được server.");
     }
@@ -79,29 +62,17 @@ export default function ReservationsPage() {
       return;
     }
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:8080/api/bookings/${selectedBooking.bookingId}`, {
-        method: "PUT",
-        headers: { 
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          bookingDate: editData.bookingDate,
-          bookingTime: editData.bookingTime,
-          guestCount: parseInt(editData.guestCount) || selectedBooking.guestCount,
-          eventType: editData.eventType,
-          note: editData.note,
-          tableId: editData.tableId ? parseInt(editData.tableId) : null
-        })
+      await BookingService.updateBooking(selectedBooking.bookingId, {
+        bookingDate: editData.bookingDate,
+        bookingTime: editData.bookingTime,
+        guestCount: parseInt(editData.guestCount) || selectedBooking.guestCount,
+        eventType: editData.eventType,
+        note: editData.note,
+        tableId: editData.tableId ? parseInt(editData.tableId) : null
       });
-      if (res.ok) {
-        alert("Cập nhật thành công!");
-        closeModal();
-        fetchBookings();
-      } else {
-        alert("Có lỗi xảy ra khi lưu chi tiết!");
-      }
+      alert("Cập nhật thành công!");
+      closeModal();
+      fetchBookings();
     } catch (err) {
       alert("Không kết nối được server.");
     }

@@ -17,7 +17,10 @@ public class PackageController {
 
     // GET /api/packages
     @GetMapping
-    public ResponseEntity<List<PartyPackage>> getAllPackages() {
+    public ResponseEntity<List<PartyPackage>> getAllPackages(@RequestParam(required = false, defaultValue = "false") boolean all) {
+        if (all) {
+            return ResponseEntity.ok(packageRepository.findAll());
+        }
         return ResponseEntity.ok(packageRepository.findByIsActive(true));
     }
 
@@ -32,6 +35,9 @@ public class PackageController {
     // POST /api/packages (Admin)
     @PostMapping
     public ResponseEntity<PartyPackage> createPackage(@RequestBody PartyPackage pkg) {
+        if (pkg.getIsActive() == null) {
+            pkg.setIsActive(true);
+        }
         return ResponseEntity.ok(packageRepository.save(pkg));
     }
 
@@ -44,8 +50,20 @@ public class PackageController {
             pkg.setDescription(updated.getDescription());
             pkg.setPrice(updated.getPrice());
             pkg.setImageUrl(updated.getImageUrl());
-            pkg.setIsActive(updated.getIsActive());
+            if (updated.getIsActive() != null) {
+                pkg.setIsActive(updated.getIsActive());
+            }
             return ResponseEntity.ok(packageRepository.save(pkg));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // DELETE /api/packages/{id} (Admin - Soft Delete)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePackage(@PathVariable Integer id) {
+        return packageRepository.findById(id).map(pkg -> {
+            pkg.setIsActive(false);
+            packageRepository.save(pkg);
+            return ResponseEntity.ok().<Void>build();
         }).orElse(ResponseEntity.notFound().build());
     }
 }

@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 
+import AdminService from "@/services/AdminService";
+import BookingService from "@/services/BookingService";
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
     totalBookings: 0,
@@ -17,20 +20,12 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const headers = { "Authorization": `Bearer ${token}` };
+      const statsData = await AdminService.getStats();
+      setStats(statsData);
       
-      const statsRes = await fetch("http://localhost:8080/api/admin/stats", { headers });
-      if (statsRes.ok) {
-        setStats(await statsRes.json());
-      }
-      
-      const bookingsRes = await fetch("http://localhost:8080/api/bookings", { headers });
-      if (bookingsRes.ok) {
-        const data = await bookingsRes.json();
-        // lấy 5 đơn mới nhất
-        setRecent(data.slice(0, 5));
-      }
+      const bookingsData = await BookingService.getAll();
+      // lấy 5 đơn mới nhất
+      setRecent(bookingsData.slice(0, 5));
     } catch(err) {
       console.error(err);
     }

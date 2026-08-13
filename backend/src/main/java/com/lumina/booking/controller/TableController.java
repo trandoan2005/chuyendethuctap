@@ -2,11 +2,13 @@ package com.lumina.booking.controller;
 
 import com.lumina.booking.entity.RestaurantTable;
 import com.lumina.booking.repository.TableRepository;
+import com.lumina.booking.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tables")
@@ -14,6 +16,7 @@ import java.util.List;
 public class TableController {
 
     private final TableRepository tableRepository;
+    private final BookingRepository bookingRepository;
 
     // GET /api/tables
     @GetMapping
@@ -33,6 +36,19 @@ public class TableController {
     @GetMapping("/available")
     public ResponseEntity<List<RestaurantTable>> getAvailableTables() {
         return ResponseEntity.ok(tableRepository.findByStatus(RestaurantTable.TableStatus.AVAILABLE));
+    }
+
+    @GetMapping("/check-availability")
+    public ResponseEntity<List<RestaurantTable>> getAvailableTablesByDate(
+            @RequestParam("date") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate date) {
+        List<RestaurantTable> allTables = tableRepository.findByStatus(RestaurantTable.TableStatus.AVAILABLE);
+        List<Integer> bookedTableIds = bookingRepository.findBookedTableIds(date);
+        
+        List<RestaurantTable> availableTables = allTables.stream()
+                .filter(table -> !bookedTableIds.contains(table.getTableId()))
+                .collect(Collectors.toList());
+                
+        return ResponseEntity.ok(availableTables);
     }
 
     // POST /api/tables (Admin)

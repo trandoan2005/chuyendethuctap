@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import BookingService from "@/services/BookingService";
+import PackageService from "@/services/PackageService";
 
 export default function BanquetBooking() {
   const router = useRouter();
@@ -26,9 +28,8 @@ export default function BanquetBooking() {
 
   useEffect(() => {
     // 1. Fetch Packages from Backend
-    fetch("http://localhost:8080/api/packages")
-      .then(res => res.json())
-      .then(data => setPackages(data))
+    PackageService.getActive()
+      .then(res => setPackages(res))
       .catch(err => console.error("Lỗi tải gói tiệc:", err));
 
     // 2. Auto-fill user info if logged in
@@ -113,22 +114,10 @@ export default function BanquetBooking() {
     };
 
     try {
-      const res = await fetch("http://localhost:8080/api/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
-        },
-        body: JSON.stringify(bookingRequest)
-      });
-
-      if (res.ok) {
-        setSubmitted(true);
-      } else {
-        alert("Có lỗi xảy ra, vui lòng thử lại sau.");
-      }
+      await BookingService.createBooking(bookingRequest);
+      setSubmitted(true);
     } catch (err) {
-      alert("Không kết nối được đến Server.");
+      alert("Không kết nối được đến Server hoặc có lỗi xảy ra.");
     } finally {
       setLoading(false);
     }
@@ -144,7 +133,7 @@ export default function BanquetBooking() {
   return (
     <>
       <header className="page-header" style={{ height: "40vh", minHeight: "300px" }}>
-        <Image src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2098&auto=format&fit=crop" alt="Banquet Header" fill sizes="100vw" className="page-header-bg" />
+        <Image src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2098&auto=format&fit=crop" alt="Banquet Header" fill sizes="100vw" priority className="page-header-bg" />
         <div className="container page-header-content animate-fade-in-up">
           <h1 className="page-title">Thiết Kế Bữa Tiệc Của Bạn</h1>
         </div>

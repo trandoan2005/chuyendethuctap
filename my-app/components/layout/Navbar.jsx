@@ -53,7 +53,13 @@ export default function Navbar() {
             <Link href="/about" className="nav-link">Về Chúng Tôi</Link>
           </li>
           <li>
+            <Link href="/reservation" className="nav-link" style={{ color: "var(--accent-gold)" }}>Đặt Bàn</Link>
+          </li>
+          <li>
             <Link href="/menu" className="nav-link">Thực Đơn</Link>
+          </li>
+          <li>
+            <Link href="/categories" className="nav-link">Danh Mục</Link>
           </li>
           <li>
             <Link href="/spaces" className="nav-link">Không Gian</Link>
@@ -61,12 +67,7 @@ export default function Navbar() {
           <li>
             <Link href="/packages" className="nav-link">Gói Tiệc</Link>
           </li>
-          <li>
-            <Link href="/reservation" className="nav-link" style={{ color: "var(--accent-gold)" }}>Đặt Bàn</Link>
-          </li>
-          <li>
-            <Link href="/banquet" className="nav-link" style={{ color: "var(--accent-gold)" }}>Dịch Vụ Tiệc</Link>
-          </li>
+
         </ul>
         <div className="nav-auth" style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
           <Link href="/reservation" style={{ position: "relative", color: "var(--accent-gold)" }}>

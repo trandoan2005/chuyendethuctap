@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import AuthService from "@/services/AuthService";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -26,40 +26,27 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
       const body = isLogin 
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      const res = await fetch(`http://localhost:8080${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
+      const data = isLogin ? await AuthService.login(body) : await AuthService.register(body);
 
-      if (!res.ok) {
-        const errData = await res.text();
-        throw new Error(errData || "Đã có lỗi xảy ra");
-      }
-
-      const data = await res.json();
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data));
       
-      alert(isLogin ? "Đăng nhập thành công!" : "Đăng ký thành công!");
-      
-      // Nếu là ADMIN thì chuyển hướng vào Dashboard Admin, ngược lại về Trang chủ
+      // Navigate to previous page if booking, else home/admin
       if (data.role === 'ADMIN') {
         router.push("/admin");
       } else {
-        router.push("/");
+        router.back(); // Trở lại trang trước đó (rất tiện nếu đang đứng ở trang Đặt bàn)
       }
       
       router.refresh();
     } catch (err) {
-      let msg = err.message;
-      try { msg = JSON.parse(err.message).message || err.message; } catch(e){}
-      setErrorMsg(msg);
+      let msg = err.response?.data || err.message;
+      try { msg = JSON.parse(err.response?.data).message || msg; } catch(e){}
+      setErrorMsg(typeof msg === 'string' ? msg : "Đã có lỗi xảy ra");
     } finally {
       setLoading(false);
     }
@@ -68,51 +55,54 @@ export default function LoginPage() {
   return (
     <>
       <div style={{ position: "fixed", inset: 0, zIndex: -1 }}>
-        <Image src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=2070&auto=format&fit=crop" alt="Background" fill sizes="100vw" style={{ objectFit: "cover", opacity: 0.3 }} />
+        <Image src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=2070&auto=format&fit=crop" alt="Background" fill sizes="100vw" priority style={{ objectFit: "cover" }} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(10, 10, 10, 0.7)", backdropFilter: "blur(10px)" }}></div>
       </div>
 
       <div className="container" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", paddingTop: "80px" }}>
-        <div className="animate-fade-in-up" style={{ maxWidth: "450px", width: "100%", padding: "3rem", background: "rgba(10, 10, 10, 0.8)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+        
+        <div className="glass-panel animate-scale-in" style={{ maxWidth: "450px", width: "100%", padding: "3rem 2.5rem" }}>
+          
           <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-            <h1 style={{ fontFamily: "var(--font-playfair)", fontSize: "2.5rem", marginBottom: "0.5rem" }}>Lumina.</h1>
-            <p style={{ color: "var(--accent-gold)", letterSpacing: "2px", textTransform: "uppercase", fontSize: "0.8rem" }}>
-              {isLogin ? "Đăng Nhập" : "Đăng Ký"}
+            <h1 className="text-gradient-gold" style={{ fontFamily: "var(--font-playfair)", fontSize: "2.5rem", marginBottom: "0.5rem" }}>Lumina.</h1>
+            <p style={{ color: "var(--text-secondary)", letterSpacing: "3px", textTransform: "uppercase", fontSize: "0.8rem" }}>
+              {isLogin ? "Thành viên Đăng Nhập" : "Đăng Ký Thành viên"}
             </p>
           </div>
           
           {errorMsg && (
-            <div style={{ padding: "0.75rem", backgroundColor: "rgba(239, 68, 68, 0.1)", color: "#ef4444", marginBottom: "1.5rem", fontSize: "0.9rem", textAlign: "center", border: "1px solid rgba(239, 68, 68, 0.3)" }}>
+            <div style={{ padding: "1rem", backgroundColor: "rgba(239, 68, 68, 0.1)", color: "#ef4444", marginBottom: "1.5rem", fontSize: "0.9rem", textAlign: "center", borderRadius: "8px", border: "1px solid rgba(239, 68, 68, 0.3)" }}>
               {errorMsg}
             </div>
           )}
 
           <form onSubmit={handleSubmit}>
             {!isLogin && (
-              <div className="form-group">
-                <label className="form-label">Họ và Tên</label>
-                <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} className="form-input" placeholder="Tên của bạn" required={!isLogin} />
+              <div className="modern-input-group">
+                <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} className="modern-input" required={!isLogin} />
+                <label className="modern-label">Họ và Tên</label>
               </div>
             )}
             
-            <div className="form-group">
-              <label className="form-label">Email</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} className="form-input" placeholder="email@example.com" required />
+            <div className="modern-input-group">
+              <input type="email" name="email" value={formData.email} onChange={handleChange} className="modern-input" required />
+              <label className="modern-label">Email</label>
             </div>
 
             {!isLogin && (
-              <div className="form-group">
-                <label className="form-label">Số Điện Thoại</label>
-                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="form-input" placeholder="0912 345 678" required={!isLogin} />
+              <div className="modern-input-group">
+                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="modern-input" required={!isLogin} />
+                <label className="modern-label">Số Điện Thoại</label>
               </div>
             )}
 
-            <div className="form-group" style={{ marginBottom: "2.5rem" }}>
-              <label className="form-label">Mật khẩu</label>
-              <input type="password" name="password" value={formData.password} onChange={handleChange} className="form-input" placeholder="••••••••" required />
+            <div className="modern-input-group" style={{ marginBottom: "2.5rem" }}>
+              <input type="password" name="password" value={formData.password} onChange={handleChange} className="modern-input" required />
+              <label className="modern-label">Mật khẩu</label>
             </div>
 
-            <button type="submit" className="btn-primary" style={{ width: "100%", marginBottom: "1.5rem" }} disabled={loading}>
-              {loading ? "Đang xử lý..." : (isLogin ? "Đăng Nhập" : "Đăng Ký Tài Khoản")}
+            <button type="submit" className="btn-primary" style={{ width: "100%", marginBottom: "1.5rem", padding: "1rem", borderRadius: "8px" }} disabled={loading}>
+              {loading ? "Đang xử lý..." : (isLogin ? "Đăng Nhập" : "Đăng Ký")}
             </button>
           </form>
 
@@ -121,7 +111,7 @@ export default function LoginPage() {
               {isLogin ? "Chưa có tài khoản?" : "Đã có tài khoản?"} 
             </span>
             <button 
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => { setIsLogin(!isLogin); setErrorMsg(""); }}
               style={{ 
                 background: "none", 
                 border: "none", 
@@ -132,10 +122,10 @@ export default function LoginPage() {
                 marginLeft: "0.5rem",
                 textTransform: "uppercase",
                 letterSpacing: "1px",
-                borderBottom: "1px solid var(--accent-gold)"
+                fontWeight: "600"
               }}
             >
-              {isLogin ? "Đăng ký" : "Đăng nhập"}
+              {isLogin ? "Đăng ký ngay" : "Đăng nhập"}
             </button>
           </div>
         </div>

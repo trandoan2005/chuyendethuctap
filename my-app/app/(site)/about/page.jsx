@@ -5,7 +5,7 @@ export default function AboutPage() {
   return (
     <>
       <header className="page-header" style={{ padding: "140px 0 80px" }}>
-        <Image src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=2070&auto=format&fit=crop" alt="About Header" fill className="page-header-bg" />
+        <Image src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=2070&auto=format&fit=crop" alt="About Header" fill sizes="100vw" priority className="page-header-bg" />
         <div className="page-header-content animate-fade-in-up">
           <p className="page-subtitle">Câu Chuyện Của Chúng Tôi</p>
           <h1 className="page-title" style={{ fontSize: "3rem" }}>Về Lumina</h1>
