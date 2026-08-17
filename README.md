@@ -79,6 +79,8 @@ Dự án được triển khai theo mô hình kiến trúc **Monorepo** chia là
 
 ## 👨‍💻 Tác Giả (Author)
 - **Đồ án Chuyên Đề Thực Tập**
-- Trình bày & Phát triển bởi: **[Tên của bạn]** 
+- **Sinh viên thực hiện:** Trần Văn Đoàn
+- **Mã số sinh viên:** 2123110210
+- **Lớp:** CCQ2311F
 
 > 💡 *Dự án được xây dựng với mục tiêu mang lại giải pháp công nghệ hiện đại, đáp ứng thực tiễn vận hành khắt khe của ngành F&B.*
