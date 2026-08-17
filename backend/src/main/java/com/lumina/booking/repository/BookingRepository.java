@@ -16,6 +16,10 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("SELECT COUNT(b) FROM Booking b WHERE b.bookingType = 'PARTY'")
     long countParty();
 
-    @Query("SELECT b.table.tableId FROM Booking b WHERE b.bookingDate = :date AND b.status != 'CANCELLED'")
-    List<Integer> findBookedTableIds(@org.springframework.data.repository.query.Param("date") java.time.LocalDate date);
+    @Query("SELECT t.tableId FROM Booking b JOIN b.tables t WHERE b.bookingDate = :date AND b.bookingTime BETWEEN :startTime AND :endTime AND b.status != 'CANCELLED' AND b.status != 'COMPLETED'")
+    List<Integer> findBookedTableIds(
+        @org.springframework.data.repository.query.Param("date") java.time.LocalDate date,
+        @org.springframework.data.repository.query.Param("startTime") java.time.LocalTime startTime,
+        @org.springframework.data.repository.query.Param("endTime") java.time.LocalTime endTime
+    );
 }

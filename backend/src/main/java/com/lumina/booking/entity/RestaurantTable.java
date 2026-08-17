@@ -26,6 +26,11 @@ public class RestaurantTable {
     @Column(name = "area", nullable = false, length = 50)
     private String area;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "zone_id")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Zone zone;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private TableStatus status = TableStatus.AVAILABLE;

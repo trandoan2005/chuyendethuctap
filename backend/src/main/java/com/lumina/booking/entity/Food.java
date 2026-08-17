@@ -27,6 +27,11 @@ public class Food {
     @Column(name = "category", nullable = false, length = 50)
     private String category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Category menuCategory;
+
     @Column(name = "image_url", length = 255)
     private String imageUrl;
 

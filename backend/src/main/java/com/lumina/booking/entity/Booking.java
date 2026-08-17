@@ -25,15 +25,24 @@ public class Booking {
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "table_id")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "booking_tables",
+        joinColumns = @JoinColumn(name = "booking_id"),
+        inverseJoinColumns = @JoinColumn(name = "table_id")
+    )
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private RestaurantTable table;
+    private java.util.List<RestaurantTable> tables = new java.util.ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "package_id")
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private PartyPackage partyPackage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "promotion_id")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Promotion promotion;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "booking_type", nullable = false)
@@ -69,6 +78,6 @@ public class Booking {
     }
 
     public enum BookingStatus {
-        PENDING, CONFIRMED, CANCELLED, COMPLETED
+        PENDING, DEPOSIT_PAID, CONFIRMED, SEATED, CANCELLED, COMPLETED
     }
 }

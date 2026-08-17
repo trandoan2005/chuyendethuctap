@@ -5,7 +5,7 @@ export default function UserLayout({ children }) {
   return (
     <>
       <Navbar />
-      <main style={{ flex: 1 }}>
+      <main className="flex-1 w-full pt-[100px]">
         {children}
       </main>
       <Footer />

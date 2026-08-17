@@ -14,7 +14,7 @@ public class BookingDTO {
         @NotNull
         private Integer userId;
 
-        private Integer tableId;
+        private List<Integer> tableIds;
         private Integer packageId;
 
         @NotBlank
@@ -63,7 +63,7 @@ public class BookingDTO {
 
         private String eventType;
         private String note;
-        private Integer tableId;
+        private List<Integer> tableIds;
     }
 
     @Data
@@ -74,8 +74,8 @@ public class BookingDTO {
         private String bookingType;
         private String eventType;
         private String decorTheme;
-        private String tableNumber;
-        private String area;
+        private List<String> tableNumbers;
+        private List<String> areas;
         private String packageName;
         private String bookingDate;
         private String bookingTime;

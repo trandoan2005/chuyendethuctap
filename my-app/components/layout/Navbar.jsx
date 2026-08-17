@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import { ShoppingBag, User, LogOut } from "lucide-react";
+import Button from "@/components/ui/Button";
 
 export default function Navbar() {
   const { cart } = useCart();
@@ -12,14 +15,11 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -39,65 +39,86 @@ export default function Navbar() {
     router.push("/login");
   };
 
-  return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <div className="container nav-container">
-        <Link href="/" className="nav-logo">
-          Lumina
-        </Link>
-        <ul className="nav-links">
-          <li>
-            <Link href="/" className="nav-link">Trang Chủ</Link>
-          </li>
-          <li>
-            <Link href="/about" className="nav-link">Về Chúng Tôi</Link>
-          </li>
-          <li>
-            <Link href="/reservation" className="nav-link" style={{ color: "var(--accent-gold)" }}>Đặt Bàn</Link>
-          </li>
-          <li>
-            <Link href="/menu" className="nav-link">Thực Đơn</Link>
-          </li>
-          <li>
-            <Link href="/categories" className="nav-link">Danh Mục</Link>
-          </li>
-          <li>
-            <Link href="/spaces" className="nav-link">Không Gian</Link>
-          </li>
-          <li>
-            <Link href="/packages" className="nav-link">Gói Tiệc</Link>
-          </li>
+  const navLinks = [
+    { href: "/", label: "Trang Chủ" },
+    { href: "/about", label: "Về Chúng Tôi" },
+    { href: "/menu", label: "Thực Đơn" },
+    { href: "/spaces", label: "Không Gian" },
+    { href: "/packages", label: "Gói Tiệc" },
+  ];
 
+  return (
+    <motion.nav 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled ? "bg-lumina-black/90 backdrop-blur-md border-b border-white/5 py-4" : "bg-transparent py-6"
+      }`}
+    >
+      <div className="container mx-auto px-6 flex justify-between items-center max-w-7xl">
+        <Link href="/" className="font-playfair text-3xl uppercase tracking-widest text-white">
+          Lumina<span className="text-lumina-gold italic">.</span>
+        </Link>
+
+        <ul className="hidden md:flex gap-10 items-center">
+          {navLinks.map((link) => (
+            <li key={link.href}>
+              <Link 
+                href={link.href} 
+                className={`text-sm uppercase tracking-widest transition-colors duration-300 hover:text-lumina-gold relative group ${
+                  pathname === link.href ? "text-lumina-gold" : "text-white/80"
+                }`}
+              >
+                {link.label}
+                <span className={`absolute -bottom-1 left-0 w-full h-[1px] bg-lumina-gold transition-transform duration-300 ${pathname === link.href ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`}></span>
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link 
+              href="/reservation" 
+              className="text-sm uppercase tracking-widest text-lumina-gold border-b border-lumina-gold pb-1 hover:text-yellow-200 transition-colors"
+            >
+              Đặt Bàn Ngay
+            </Link>
+          </li>
         </ul>
-        <div className="nav-auth" style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-          <Link href="/reservation" style={{ position: "relative", color: "var(--accent-gold)" }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
+
+        <div className="flex items-center gap-6">
+          <Link href="/reservation" className="relative text-lumina-gold hover:text-yellow-200 transition-colors">
+            <ShoppingBag size={24} strokeWidth={1.5} />
             {cartItemCount > 0 && (
-              <span style={{
-                position: "absolute", top: "-8px", right: "-12px",
-                backgroundColor: "red", color: "white", fontSize: "0.7rem",
-                width: "18px", height: "18px", borderRadius: "50%",
-                display: "flex", alignItems: "center", justifyContent: "center"
-              }}>
+              <motion.span 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold"
+              >
                 {cartItemCount}
-              </span>
+              </motion.span>
             )}
           </Link>
           
           {user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <span style={{ color: "var(--text-primary)", fontWeight: "400", letterSpacing: "1px", fontSize: "0.85rem", textTransform: "uppercase" }}>Xin chào, {user.fullName.split(" ")[0]}</span>
-              <button onClick={handleLogout} className="btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}>Đăng Xuất</button>
+            <div className="flex items-center gap-4">
+              <span className="text-white/80 text-sm uppercase tracking-wider hidden lg:block">
+                Xin chào, {user.fullName.split(" ")[0]}
+              </span>
+              <button 
+                onClick={handleLogout} 
+                className="text-white/60 hover:text-red-400 transition-colors"
+                title="Đăng xuất"
+              >
+                <LogOut size={20} strokeWidth={1.5} />
+              </button>
             </div>
           ) : (
-            <Link href="/login" className="btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}>Đăng Nhập</Link>
+            <Link href="/login">
+              <User size={24} strokeWidth={1.5} className="text-white/80 hover:text-lumina-gold transition-colors" />
+            </Link>
           )}
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 }

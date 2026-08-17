@@ -37,10 +37,9 @@ public class BookingService {
         booking.setDecorTheme(request.getDecorTheme());
         booking.setStatus(Booking.BookingStatus.PENDING);
 
-        if (request.getTableId() != null) {
-            RestaurantTable table = tableRepository.findById(request.getTableId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy bàn"));
-            booking.setTable(table);
+        if (request.getTableIds() != null && !request.getTableIds().isEmpty()) {
+            List<RestaurantTable> tables = tableRepository.findAllById(request.getTableIds());
+            booking.setTables(tables);
         }
 
         if (request.getPackageId() != null) {
@@ -91,9 +90,11 @@ public class BookingService {
         booking.setStatus(Booking.BookingStatus.valueOf(status));
 
         // Khi xác nhận, cập nhật trạng thái bàn
-        if ("CONFIRMED".equals(status) && booking.getTable() != null) {
-            booking.getTable().setStatus(RestaurantTable.TableStatus.RESERVED);
-            tableRepository.save(booking.getTable());
+        if ("CONFIRMED".equals(status) && booking.getTables() != null) {
+            for (RestaurantTable t : booking.getTables()) {
+                t.setStatus(RestaurantTable.TableStatus.RESERVED);
+            }
+            tableRepository.saveAll(booking.getTables());
         }
 
         return bookingRepository.save(booking);
@@ -113,12 +114,11 @@ public class BookingService {
             booking.setEventType(request.getEventType());
         }
 
-        if (request.getTableId() != null) {
-            RestaurantTable table = tableRepository.findById(request.getTableId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy bàn"));
-            booking.setTable(table);
+        if (request.getTableIds() != null && !request.getTableIds().isEmpty()) {
+            List<RestaurantTable> tables = tableRepository.findAllById(request.getTableIds());
+            booking.setTables(tables);
         } else {
-            booking.setTable(null);
+            booking.getTables().clear();
         }
 
         return bookingRepository.save(booking);

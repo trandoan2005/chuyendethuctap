@@ -38,17 +38,28 @@ public class TableController {
         return ResponseEntity.ok(tableRepository.findByStatus(RestaurantTable.TableStatus.AVAILABLE));
     }
 
+    private final com.lumina.booking.service.TableService tableService;
+
     @GetMapping("/check-availability")
-    public ResponseEntity<List<RestaurantTable>> getAvailableTablesByDate(
-            @RequestParam("date") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate date) {
-        List<RestaurantTable> allTables = tableRepository.findByStatus(RestaurantTable.TableStatus.AVAILABLE);
-        List<Integer> bookedTableIds = bookingRepository.findBookedTableIds(date);
+    public ResponseEntity<?> getAvailableTablesByDateTime(
+            @RequestParam("date") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate date,
+            @RequestParam("time") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.TIME) java.time.LocalTime time,
+            @RequestParam("guests") int guests) {
         
-        List<RestaurantTable> availableTables = allTables.stream()
-                .filter(table -> !bookedTableIds.contains(table.getTableId()))
-                .collect(Collectors.toList());
+        List<RestaurantTable> availableTables = tableService.getAvailableTables(date, time, guests);
+        
+        // Nếu không có bàn đơn đủ sức chứa, thử gọi thuật toán ghép bàn
+        boolean needsMerge = availableTables.stream().noneMatch(t -> t.getCapacity() >= guests);
+        
+        if (needsMerge) {
+            List<List<RestaurantTable>> suggestions = tableService.suggestMergedTables(date, time, guests, null);
+            return ResponseEntity.ok(java.util.Map.of(
+                "availableTables", availableTables,
+                "suggestions", suggestions
+            ));
+        }
                 
-        return ResponseEntity.ok(availableTables);
+        return ResponseEntity.ok(java.util.Map.of("availableTables", availableTables));
     }
 
     // POST /api/tables (Admin)
