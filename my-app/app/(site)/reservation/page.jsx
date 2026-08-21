@@ -69,8 +69,9 @@ export default function UnifiedBookingPage() {
     const defaultDate = `${yyyy}-${mm}-${dd}`;
     setFilterData(prev => ({ ...prev, date: defaultDate }));
     
-    TableService.checkAvailability(defaultDate).then(availableTables => {
-      let matchedTables = availableTables.filter(t => t.capacity >= 2);
+    TableService.checkAvailability(defaultDate, '18:00', 2).then(response => {
+      const availableTables = response.availableTables || response || [];
+      let matchedTables = Array.isArray(availableTables) ? availableTables.filter(t => t.capacity >= 2) : [];
       setTables(matchedTables);
     }).catch(e => console.error(e));
   }, []);
@@ -99,10 +100,10 @@ export default function UnifiedBookingPage() {
 
     try {
       setLoading(true);
-      const availableTables = await TableService.checkAvailability(filterData.date);
-      
+      const response = await TableService.checkAvailability(filterData.date, filterData.time, filterData.guests);
+      const availableTables = response.availableTables || response || [];
       const guestCount = parseInt(filterData.guests);
-      let matchedTables = availableTables.filter(t => t.capacity >= guestCount);
+      let matchedTables = Array.isArray(availableTables) ? availableTables.filter(t => t.capacity >= guestCount) : [];
       
       if (["PARTY", "BIRTHDAY", "COMPANY"].includes(filterData.bookingType)) {
         if (guestCount < 10) {
